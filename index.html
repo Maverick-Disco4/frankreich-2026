@@ -11,7 +11,7 @@
 </head>
 <body>
   <header>
-    <button class="icon-btn" id="menuBtn" aria-label="Menü">☰</button>
+    <button class="icon-btn" aria-label="Menü">☰</button>
     <div>
       <h1>Frankreich 2026</h1>
       <p>Discovery 4 · Dachzelt · Kajak</p>
@@ -38,7 +38,7 @@
         <div class="status-grid">
           <div><span id="totalKm">0</span><small>km dokumentiert</small></div>
           <div><span id="totalTime">0:00</span><small>Fahrzeit dokumentiert</small></div>
-          <div><span id="activeState">Bereit</span><small>Status</small></div>
+          <div><span id="activeState">bereit</span><small>Status</small></div>
         </div>
         <div class="actions">
           <button id="startPauseBtn">Etappe starten</button>
@@ -60,9 +60,7 @@
       </section>
     </section>
 
-    <section id="mapView" class="view">
-      <section id="map"></section>
-    </section>
+    <section id="mapView" class="view"><section id="map"></section></section>
 
     <section id="stages" class="view">
       <section class="panel">
@@ -96,37 +94,72 @@
 
     <section id="journal" class="view">
       <section class="panel">
-        <h2>Reisetagebuch / eigene POIs</h2>
-        <p class="hint">Markiere eigene Fundpunkte unterwegs – z. B. Stellplatz, Aussicht, Badestelle, Einkauf, Werkstatt oder Zufallsfund. Die Marker erscheinen als kleiner schwarzer Discovery auf der Karte.</p>
+        <h2>Discovery-Journal</h2>
+        <p class="hint">Eigene Fundpunkte unterwegs speichern: Stellplätze, Kajak-Einstiege, Aussichtspunkte, Einkauf, Diesel/Wasser, Werkstatt oder Geheimtipps. Jeder POI kann Notiz, Bewertung und Foto bekommen.</p>
         <div class="actions two">
           <button id="addCurrentPoiBtn">POI an aktueller Position</button>
           <button id="addManualPoiBtn" class="secondary-btn">POI manuell setzen</button>
         </div>
+
         <form id="poiForm" class="poi-form" hidden>
           <input id="poiName" type="text" placeholder="Name, z. B. Ruhiger Platz am Tarn" required>
           <select id="poiCategory">
-            <option>Stellplatz</option>
-            <option>Aussicht</option>
-            <option>Kajak-Einstieg</option>
-            <option>Badestelle</option>
-            <option>Lebensmittel</option>
-            <option>Restaurant/Café</option>
-            <option>Diesel/Wasser</option>
-            <option>Werkstatt</option>
-            <option>Sonstiges</option>
+            <option value="Stellplatz">🏕 Stellplatz</option>
+            <option value="Aussicht">📷 Aussicht</option>
+            <option value="Kajak-Einstieg">🚣 Kajak-Einstieg</option>
+            <option value="Badestelle">🏊 Badestelle</option>
+            <option value="Lebensmittel">🛒 Lebensmittel</option>
+            <option value="Restaurant/Café">☕ Restaurant/Café</option>
+            <option value="Diesel/Wasser">⛽ Diesel/Wasser</option>
+            <option value="Werkstatt">🔧 Werkstatt</option>
+            <option value="Geheimtipp">⭐ Geheimtipp</option>
+            <option value="Sonstiges">🚙 Sonstiges</option>
+          </select>
+          <select id="poiRating">
+            <option value="0">Keine Bewertung</option>
+            <option value="1">★☆☆☆☆</option>
+            <option value="2">★★☆☆☆</option>
+            <option value="3">★★★☆☆</option>
+            <option value="4">★★★★☆</option>
+            <option value="5">★★★★★</option>
           </select>
           <input id="poiLat" type="number" step="0.000001" placeholder="Breitengrad">
           <input id="poiLon" type="number" step="0.000001" placeholder="Längengrad">
           <textarea id="poiNote" placeholder="Notiz / Tagebucheintrag"></textarea>
+          <label class="file-label">Foto hinzufügen
+            <input id="poiPhoto" type="file" accept="image/*" capture="environment">
+          </label>
+          <div id="photoPreview" class="photo-preview" hidden></div>
           <div class="actions two">
             <button>POI speichern</button>
             <button type="button" id="cancelPoiBtn" class="secondary-btn">Abbrechen</button>
           </div>
         </form>
+
+        <div class="journal-tools">
+          <select id="poiFilter">
+            <option value="Alle">Alle Kategorien</option>
+            <option value="Stellplatz">🏕 Stellplatz</option>
+            <option value="Aussicht">📷 Aussicht</option>
+            <option value="Kajak-Einstieg">🚣 Kajak-Einstieg</option>
+            <option value="Badestelle">🏊 Badestelle</option>
+            <option value="Lebensmittel">🛒 Lebensmittel</option>
+            <option value="Restaurant/Café">☕ Restaurant/Café</option>
+            <option value="Diesel/Wasser">⛽ Diesel/Wasser</option>
+            <option value="Werkstatt">🔧 Werkstatt</option>
+            <option value="Geheimtipp">⭐ Geheimtipp</option>
+            <option value="Sonstiges">🚙 Sonstiges</option>
+          </select>
+          <input id="poiSearch" type="search" placeholder="POIs durchsuchen">
+        </div>
+
         <div class="actions two">
           <button id="exportPoisBtn" class="secondary-btn">POIs exportieren</button>
-          <button id="clearPoisBtn" class="danger-btn">Eigene POIs löschen</button>
+          <label class="import-btn">POIs importieren
+            <input id="importPoisInput" type="file" accept="application/json">
+          </label>
         </div>
+        <button id="clearPoisBtn" class="danger-btn full">Eigene POIs löschen</button>
         <div id="poiList"></div>
       </section>
     </section>
