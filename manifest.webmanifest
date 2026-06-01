@@ -1,0 +1,11 @@
+{
+  "name": "Frankreich 2026 Reiseapp",
+  "short_name": "Frankreich 2026",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f1711",
+  "theme_color": "#17251b",
+  "icons": []
+}

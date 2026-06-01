@@ -1,0 +1,432 @@
+{
+  "tripName": "Frankreich 2026",
+  "subtitle": "Discovery 4 · Dachzelt · Kajak · Frankreichreise",
+  "period": "11.07.–02.08.2026",
+  "home": {
+    "name": "Bad Zwischenahn",
+    "lat": 53.183,
+    "lon": 8.0
+  },
+  "legs": [
+    {
+      "id": "leg-01",
+      "date": "11.07.",
+      "title": "Bad Zwischenahn → Vézelay / Morvan",
+      "from": "Bad Zwischenahn",
+      "to": "Vézelay / Morvan",
+      "km": 720,
+      "time": "8:30–9:30 h",
+      "lat": 47.466,
+      "lon": 3.747,
+      "overnight": "Lac des Settons, Morvan, Vézelay-Umgebung",
+      "notes": "Lange Transitetappe; erster Frankreich-Abend im Morvan. Suchgebiet am Wasser bevorzugen.",
+      "tags": [
+        "Transit",
+        "Wasser",
+        "Dachzelt"
+      ],
+      "groceries": [
+        "Avallon",
+        "Vézelay",
+        "Saulieu"
+      ]
+    },
+    {
+      "id": "leg-02",
+      "date": "12.07.",
+      "title": "Vézelay / Morvan → Amboise / Loire",
+      "from": "Vézelay / Morvan",
+      "to": "Amboise / Loire",
+      "km": 260,
+      "time": "4:00–4:45 h",
+      "lat": 47.413,
+      "lon": 0.982,
+      "overnight": "Cher/Loire bei Amboise",
+      "notes": "Einrollen ins Loiretal. Abends Amboise oder ruhiger Platz am Cher.",
+      "tags": [
+        "Loire",
+        "Schlösser",
+        "Kajak"
+      ],
+      "groceries": [
+        "Amboise",
+        "Bléré",
+        "Tours"
+      ]
+    },
+    {
+      "id": "leg-03",
+      "date": "13.07.",
+      "title": "Loiretal-Rundtag",
+      "from": "Amboise",
+      "to": "Chambord / Chenonceau / Amboise",
+      "km": 120,
+      "time": "2:30–3:15 h",
+      "lat": 47.413,
+      "lon": 0.982,
+      "overnight": "Amboise, Montlouis-sur-Loire, Bléré",
+      "notes": "Schlössertag. Kajakoption auf Cher/Loire je nach Wetter und Wasserstand.",
+      "tags": [
+        "Schlösser",
+        "Kajak",
+        "POI"
+      ],
+      "groceries": [
+        "Amboise",
+        "Blois",
+        "Montrichard"
+      ]
+    },
+    {
+      "id": "leg-04",
+      "date": "14.07.",
+      "title": "Amboise → Tournon-sur-Rhône",
+      "from": "Amboise",
+      "to": "Tournon-sur-Rhône",
+      "km": 400,
+      "time": "6:00–7:00 h",
+      "lat": 45.067,
+      "lon": 4.833,
+      "overnight": "Tournon/St.-Péray, Rhône-Ufer",
+      "notes": "Verbindungsetappe Richtung Süden. Möglichst Nebenstraßen, aber pragmatisch bleiben.",
+      "tags": [
+        "Transit",
+        "Rhône"
+      ],
+      "groceries": [
+        "Tournon-sur-Rhône",
+        "Valence",
+        "Saint-Péray"
+      ]
+    },
+    {
+      "id": "leg-05",
+      "date": "15.07.",
+      "title": "Tournon-sur-Rhône → La Croix-Valmer",
+      "from": "Tournon-sur-Rhône",
+      "to": "La Croix-Valmer",
+      "km": 300,
+      "time": "4:30–5:30 h",
+      "lat": 43.206,
+      "lon": 6.567,
+      "overnight": "Ferienwohnung La Croix-Valmer",
+      "notes": "Ankunft Ferienwohnung. Vorräte auffüllen vor oder nach Bezug.",
+      "tags": [
+        "Ankunft",
+        "Ferienwohnung"
+      ],
+      "groceries": [
+        "La Croix-Valmer",
+        "Cavalaire-sur-Mer",
+        "Cogolin"
+      ]
+    },
+    {
+      "id": "leg-06",
+      "date": "15.–25.07.",
+      "title": "Standorttage La Croix-Valmer",
+      "from": "La Croix-Valmer",
+      "to": "Küste / Maures / Ramatuelle",
+      "km": 80,
+      "time": "flexibel",
+      "lat": 43.206,
+      "lon": 6.567,
+      "overnight": "Ferienwohnung",
+      "notes": "Küste, Cap Taillat, Gigaro, Ramatuelle, Massif des Maures. Kajak früh morgens.",
+      "tags": [
+        "Küste",
+        "Kajak",
+        "Standort"
+      ],
+      "groceries": [
+        "La Croix-Valmer",
+        "Cavalaire-sur-Mer",
+        "Cogolin",
+        "Gassin"
+      ]
+    },
+    {
+      "id": "leg-07",
+      "date": "25.07.",
+      "title": "La Croix-Valmer → Moustiers-Sainte-Marie",
+      "from": "La Croix-Valmer",
+      "to": "Moustiers-Sainte-Marie",
+      "km": 180,
+      "time": "3:00–3:45 h",
+      "lat": 43.846,
+      "lon": 6.221,
+      "overnight": "Moustiers, Valensole, Lac de Sainte-Croix",
+      "notes": "Provence-Stopp. Optional nochmal See/Verdon, aber ohne großen Verdon-Fokus.",
+      "tags": [
+        "Provence",
+        "See"
+      ],
+      "groceries": [
+        "Aups",
+        "Moustiers-Sainte-Marie",
+        "Riez"
+      ]
+    },
+    {
+      "id": "leg-08",
+      "date": "26.07.",
+      "title": "Moustiers → Lac Chambon / Chaîne des Puys",
+      "from": "Moustiers-Sainte-Marie",
+      "to": "Lac Chambon",
+      "km": 380,
+      "time": "6:00–7:00 h",
+      "lat": 45.571,
+      "lon": 2.897,
+      "overnight": "Lac Chambon, Lac d’Aydat, Murol",
+      "notes": "Landschaftlich starke Westquerung ins Vulkanland. Ziel möglichst am See.",
+      "tags": [
+        "Auvergne",
+        "Vulkane",
+        "Wasser"
+      ],
+      "groceries": [
+        "Murol",
+        "Besse-et-Saint-Anastaise",
+        "Clermont-Ferrand"
+      ]
+    },
+    {
+      "id": "leg-09",
+      "date": "27.07.",
+      "title": "Auvergne-Rundtag",
+      "from": "Lac Chambon",
+      "to": "Puy de Dôme / Vulkanseen",
+      "km": 80,
+      "time": "2:00–3:00 h",
+      "lat": 45.571,
+      "lon": 2.897,
+      "overnight": "Zweite Nacht am See oder Naturcamping",
+      "notes": "Wandern, Vulkanseen, kurze Kajak-/Badeoption.",
+      "tags": [
+        "Vulkane",
+        "Wandern",
+        "Kajak"
+      ],
+      "groceries": [
+        "Murol",
+        "Besse-et-Saint-Anastaise",
+        "Clermont-Ferrand"
+      ]
+    },
+    {
+      "id": "leg-10",
+      "date": "28.07.",
+      "title": "Auvergne → Sainte-Enimie / Gorges du Tarn",
+      "from": "Auvergne",
+      "to": "Sainte-Enimie",
+      "km": 210,
+      "time": "3:45–4:30 h",
+      "lat": 44.365,
+      "lon": 3.412,
+      "overnight": "Sainte-Enimie, Castelbouc, La Malène",
+      "notes": "Ankunft in der Tarnschlucht mit Zeit am Fluss. Gute Region für zwei Nächte.",
+      "tags": [
+        "Tarn",
+        "Schlucht",
+        "Kajak"
+      ],
+      "groceries": [
+        "Florac",
+        "Sainte-Enimie",
+        "Mende"
+      ]
+    },
+    {
+      "id": "leg-11",
+      "date": "29.07.",
+      "title": "Kajaktag Gorges du Tarn",
+      "from": "Sainte-Enimie",
+      "to": "La Malène / Tarn",
+      "km": 40,
+      "time": "kurze Transfers",
+      "lat": 44.33,
+      "lon": 3.37,
+      "overnight": "Zweite Nacht Tarn",
+      "notes": "Kajakabschnitt Sainte-Enimie–La Malène. Rücktransfer organisieren.",
+      "tags": [
+        "Kajak",
+        "Fluss",
+        "Pausentag"
+      ],
+      "groceries": [
+        "Sainte-Enimie",
+        "Florac",
+        "Mende"
+      ]
+    },
+    {
+      "id": "leg-12",
+      "date": "30.07.",
+      "title": "Gorges du Tarn → Saint-Cirq-Lapopie / Lot",
+      "from": "Gorges du Tarn",
+      "to": "Saint-Cirq-Lapopie",
+      "km": 190,
+      "time": "3:30–4:15 h",
+      "lat": 44.465,
+      "lon": 1.671,
+      "overnight": "Bouziès, Saint-Cirq-Lapopie, Vers, Cajarc",
+      "notes": "Vom Schluchtfluss ins ruhigere Lot-Tal. Sehr gute Campspace-/Hofcamping-Region.",
+      "tags": [
+        "Lot",
+        "Dorf",
+        "Kajak"
+      ],
+      "groceries": [
+        "Cajarc",
+        "Cahors",
+        "Saint-Géry-Vers"
+      ]
+    },
+    {
+      "id": "leg-13",
+      "date": "31.07.",
+      "title": "Lot → Sarlat / Dordogne",
+      "from": "Lot",
+      "to": "Sarlat-la-Canéda",
+      "km": 110,
+      "time": "2:00–2:45 h",
+      "lat": 44.89,
+      "lon": 1.216,
+      "overnight": "La Roque-Gageac, Beynac, Castelnaud, Sarlat",
+      "notes": "Kurze Etappe. Burgen, Altstadt, Dordogne-Kajak. Ende Juli früh Plätze suchen.",
+      "tags": [
+        "Dordogne",
+        "Burgen",
+        "Kajak"
+      ],
+      "groceries": [
+        "Sarlat-la-Canéda",
+        "Domme",
+        "Souillac"
+      ]
+    },
+    {
+      "id": "leg-14",
+      "date": "01.08.",
+      "title": "Dordogne → Perche / Bellême",
+      "from": "Dordogne",
+      "to": "Bellême / Perche",
+      "km": 480,
+      "time": "6:30–7:30 h",
+      "lat": 48.379,
+      "lon": 0.57,
+      "overnight": "Forêt de Bellême, Nogent-le-Rotrou, Perche",
+      "notes": "Bewusst weiter nach Norden, damit der letzte Reisetag nicht zu lang wird.",
+      "tags": [
+        "Transit",
+        "Wald",
+        "Campspace"
+      ],
+      "groceries": [
+        "Bellême",
+        "Nogent-le-Rotrou",
+        "Mortagne-au-Perche"
+      ]
+    },
+    {
+      "id": "leg-15",
+      "date": "02.08.",
+      "title": "Bellême / Perche → Bad Zwischenahn",
+      "from": "Bellême / Perche",
+      "to": "Bad Zwischenahn",
+      "km": 650,
+      "time": "7:00–8:00 h",
+      "lat": 53.183,
+      "lon": 8.0,
+      "overnight": "Zuhause",
+      "notes": "Finale Rückfahrt. Kürzer als der frühere 900-km-Schlusssprint.",
+      "tags": [
+        "Heimfahrt"
+      ],
+      "groceries": [
+        "Bad Zwischenahn",
+        "Oldenburg"
+      ]
+    }
+  ],
+  "pois": [
+    {
+      "name": "Schloss Chambord",
+      "lat": 47.616,
+      "lon": 1.517,
+      "type": "Schloss"
+    },
+    {
+      "name": "Schloss Chenonceau",
+      "lat": 47.324,
+      "lon": 1.07,
+      "type": "Schloss/Kajak"
+    },
+    {
+      "name": "Schloss Villandry",
+      "lat": 47.341,
+      "lon": 0.513,
+      "type": "Schloss/Garten"
+    },
+    {
+      "name": "Cap Taillat",
+      "lat": 43.172,
+      "lon": 6.623,
+      "type": "Natur/Kajak"
+    },
+    {
+      "name": "Plage de Gigaro",
+      "lat": 43.188,
+      "lon": 6.656,
+      "type": "Strand/Kajak"
+    },
+    {
+      "name": "Lac de Sainte-Croix",
+      "lat": 43.785,
+      "lon": 6.207,
+      "type": "See/Kajak"
+    },
+    {
+      "name": "Puy de Dôme",
+      "lat": 45.772,
+      "lon": 2.964,
+      "type": "Vulkan"
+    },
+    {
+      "name": "Lac Chambon",
+      "lat": 45.571,
+      "lon": 2.897,
+      "type": "See/Kajak"
+    },
+    {
+      "name": "Sainte-Enimie",
+      "lat": 44.365,
+      "lon": 3.412,
+      "type": "Tarn/Kajak"
+    },
+    {
+      "name": "Castelbouc",
+      "lat": 44.338,
+      "lon": 3.464,
+      "type": "Tarn/Übernachtung"
+    },
+    {
+      "name": "Saint-Cirq-Lapopie",
+      "lat": 44.465,
+      "lon": 1.671,
+      "type": "Lot/Ort"
+    },
+    {
+      "name": "La Roque-Gageac",
+      "lat": 44.825,
+      "lon": 1.184,
+      "type": "Dordogne/Kajak"
+    },
+    {
+      "name": "Beynac-et-Cazenac",
+      "lat": 44.841,
+      "lon": 1.143,
+      "type": "Burg/Fluss"
+    }
+  ]
+}
