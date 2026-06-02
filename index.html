@@ -23,6 +23,7 @@
     <button class="tab active" data-view="dashboard">Übersicht</button>
     <button class="tab" data-view="mapView">Karte</button>
     <button class="tab" data-view="stages">Etappen</button>
+    <button class="tab" data-view="planner">Planung</button>
     <button class="tab" data-view="search">Suche</button>
     <button class="tab" data-view="journal">Tagebuch</button>
     <button class="tab" data-view="tracking">GPS</button>
@@ -59,6 +60,7 @@
 
       <section class="panel">
         <h2>Schnellzugriff aktuelle Region</h2>
+        <button class="secondary-btn full" onclick="showView('planner')">Planung bearbeiten</button>
         <div class="actions two">
           <a id="quickPark4Night" class="link-btn" target="_blank" rel="noopener">Park4Night</a>
           <a id="quickCampspace" class="link-btn" target="_blank" rel="noopener">Campspace</a>
@@ -71,6 +73,25 @@
     </section>
 
     <section id="mapView" class="view"><section id="map"></section></section>
+
+    
+    <section id="planner" class="view">
+      <section class="panel">
+        <h2>Planung bearbeiten</h2>
+        <p class="hint">Etappen nachträglich verschieben, Ziele überschreiben, Koordinaten anpassen, Etappen duplizieren oder löschen. Änderungen werden lokal auf diesem Gerät gespeichert.</p>
+        <div class="actions two">
+          <button id="addLegBtn">Neue Etappe</button>
+          <button id="resetPlanBtn" class="danger-btn">Originalplanung</button>
+        </div>
+        <div class="actions two">
+          <button id="exportPlanBtn" class="secondary-btn">Planung exportieren</button>
+          <label class="import-btn">Planung importieren
+            <input id="importPlanInput" type="file" accept="application/json">
+          </label>
+        </div>
+        <div id="plannerList" class="planner-list"></div>
+      </section>
+    </section>
 
     <section id="stages" class="view">
       <section class="panel">

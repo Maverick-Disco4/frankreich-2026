@@ -38,3 +38,13 @@ Danach lädt GitHub Pages automatisch neu.
 - GPX-Export für Live-Track und abgeschlossene Tracks
 
 Hinweis: Auf Android Standortberechtigung erlauben, Energiesparen für Browser/App deaktivieren und Display möglichst aktiv lassen.
+
+## Route Planner v4
+- Etappen nachträglich bearbeiten
+- Etappenziele, Titel, Datum, km, Zeit, Koordinaten, Übernachtung und Notizen überschreiben
+- Etappen per Drag & Drop sortieren
+- Smartphone-freundliche ↑/↓ Sortierung
+- Etappen duplizieren/löschen
+- neue Etappen hinzufügen
+- Planung exportieren/importieren
+- Originalplanung wiederherstellen
