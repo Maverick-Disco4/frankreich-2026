@@ -377,264 +377,254 @@ function setupGpsTracking(){
   setTimeout(()=>{ redrawLiveTrack(); updateGpsUi(); renderTracks(); }, 500);
 }
 
-/* ===== Route Planner v5 Hotfix ===== */
-function plannerGetLegs(){
-  const custom = localStorage.getItem("fr2026-custom-legs-v5") || localStorage.getItem("fr2026-custom-legs");
-  if(custom){ try { return JSON.parse(custom); } catch(e){} }
-  return trip.legs;
-}
-function plannerSaveLegs(legs){
-  localStorage.setItem("fr2026-custom-legs-v5", JSON.stringify(legs));
-  localStorage.setItem("fr2026-custom-legs", JSON.stringify(legs));
-  trip.legs = legs;
-  if(typeof save === "function") save();
-}
-function plannerNormalize(l, i){
+
+/* ===== Route Editor v6 reliable mobile editor ===== */
+function plannerCleanLeg(leg, i){
   return {
-    ...l,
-    id: l.id || "leg-custom-" + Date.now() + "-" + i,
-    date: l.date || "",
-    title: l.title || `${l.from || ""} → ${l.to || ""}`,
-    from: l.from || "",
-    to: l.to || "",
-    km: Number(l.km || 0),
-    time: l.time || "",
-    lat: Number(l.lat || 0),
-    lon: Number(l.lon || 0),
-    overnight: l.overnight || "",
-    notes: l.notes || "",
-    tags: Array.isArray(l.tags) ? l.tags : [],
-    groceries: Array.isArray(l.groceries) ? l.groceries : []
+    ...leg,
+    id: leg.id || "leg-" + Date.now() + "-" + i,
+    date: leg.date || "",
+    title: leg.title || `${leg.from || ""} → ${leg.to || ""}`,
+    from: leg.from || "",
+    to: leg.to || "",
+    km: Number(leg.km || 0),
+    time: leg.time || "",
+    lat: Number(leg.lat || 0),
+    lon: Number(leg.lon || 0),
+    overnight: leg.overnight || "",
+    notes: leg.notes || "",
+    tags: Array.isArray(leg.tags) ? leg.tags : [],
+    groceries: Array.isArray(leg.groceries) ? leg.groceries : []
   };
 }
-function plannerEsc(s){
+function plannerHtml(s){
   return String(s ?? "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
-function plannerRefresh(){
-  const legs = plannerGetLegs().map(plannerNormalize);
-  trip.legs = legs;
-  if(!legs.find(l => l.id === state.currentLegId)) state.currentLegId = legs[0]?.id || "leg-01";
-
-  const sel = document.getElementById("regionSelect");
-  if(sel){
-    sel.innerHTML = legs.map(l => `<option value="${l.id}">${plannerEsc(l.date)} · ${plannerEsc(l.to)}</option>`).join("");
-    sel.value = state.currentLegId;
+function plannerGet(){
+  const saved = localStorage.getItem("fr2026-plan-v6");
+  if(saved){
+    try { return JSON.parse(saved).map(plannerCleanLeg); } catch(e){}
   }
-
+  return trip.legs.map(plannerCleanLeg);
+}
+function plannerSet(legs){
+  const clean = legs.map(plannerCleanLeg);
+  localStorage.setItem("fr2026-plan-v6", JSON.stringify(clean));
+  trip.legs = clean;
+  if(!trip.legs.find(l => l.id === state.currentLegId)){
+    state.currentLegId = trip.legs[0]?.id || "leg-01";
+  }
+  if(typeof save === "function") save();
+  plannerSyncApp();
+}
+function plannerSyncApp(){
+  if(typeof renderRegions === "function"){
+    const sel = document.getElementById("regionSelect");
+    if(sel){
+      sel.innerHTML = trip.legs.map(l => `<option value="${l.id}">${plannerHtml(l.date)} · ${plannerHtml(l.to)}</option>`).join("");
+      sel.value = state.currentLegId;
+    }
+  }
   if(typeof renderLegs === "function") renderLegs();
   if(typeof updateHeader === "function") updateHeader();
-
   if(map && routeLine){
-    try { map.removeLayer(routeLine); } catch(e){}
-    const coords = legs.map(l => [Number(l.lat), Number(l.lon)]).filter(p => Number.isFinite(p[0]) && Number.isFinite(p[1]));
+    try{ map.removeLayer(routeLine); }catch(e){}
+    const coords = trip.legs.map(l => [Number(l.lat), Number(l.lon)]).filter(p => Number.isFinite(p[0]) && Number.isFinite(p[1]));
     routeLine = L.polyline(coords, {weight:4, color:"#29a545"}).addTo(map);
   }
 }
-function plannerReadCard(id){
-  const card = document.querySelector(`.planner-card[data-id="${id}"]`);
-  if(!card) return null;
-  const get = field => card.querySelector(`[data-field="${field}"]`)?.value ?? "";
-  const leg = plannerGetLegs().map(plannerNormalize).find(l => l.id === id);
-  if(!leg) return null;
-  return {
-    ...leg,
-    date:get("date"),
-    title:get("title"),
-    from:get("from"),
-    to:get("to"),
-    km:Number(get("km") || 0),
-    time:get("time"),
-    lat:Number(get("lat") || 0),
-    lon:Number(get("lon") || 0),
-    overnight:get("overnight"),
-    notes:get("notes")
-  };
-}
-function plannerSaveCard(id){
-  const legs = plannerGetLegs().map(plannerNormalize);
-  const idx = legs.findIndex(l => l.id === id);
-  const updated = plannerReadCard(id);
-  if(idx < 0 || !updated) return;
-  legs[idx] = updated;
-  plannerSaveLegs(legs);
-  plannerRefresh();
-  renderPlanner();
-  const newCard = document.querySelector(`.planner-card[data-id="${id}"]`);
-  if(newCard){
-    newCard.classList.add("saved");
-    setTimeout(()=>newCard.classList.remove("saved"), 1000);
-  }
-}
-function renderPlanner(){
-  const el = document.getElementById("plannerList");
-  if(!el || typeof trip === "undefined") return;
-  const legs = plannerGetLegs().map(plannerNormalize);
-  el.innerHTML = legs.map((l, idx) => `
-    <article class="planner-card" draggable="true" data-id="${l.id}">
-      <div class="planner-head">
-        <div class="drag-handle">☰</div>
-        <div>
-          <div class="planner-title">${idx+1}. ${plannerEsc(l.date)} · ${plannerEsc(l.title || l.to)}</div>
-          <div class="meta">${l.km} km · ${plannerEsc(l.time)}</div>
-        </div>
-        <button class="mini-btn secondary-btn" onclick="selectLeg('${l.id}')">Wählen</button>
+function plannerRender(){
+  const list = document.getElementById("plannerList");
+  if(!list || typeof trip === "undefined") return;
+  const legs = plannerGet();
+  trip.legs = legs;
+  list.innerHTML = legs.map((l, i) => `
+    <article class="planner-row ${l.id === state.currentLegId ? "active" : ""}" data-id="${l.id}">
+      <div class="planner-num">${i+1}</div>
+      <div class="planner-main" onclick="plannerOpen('${l.id}')">
+        <strong>${plannerHtml(l.date)} · ${plannerHtml(l.title || l.to)}</strong>
+        <span>${plannerHtml(l.from)} → ${plannerHtml(l.to)}</span>
+        <span>${Number(l.km || 0)} km · ${plannerHtml(l.time)} · ${plannerHtml(l.overnight || "")}</span>
       </div>
-
-      <div class="planner-grid">
-        <label>Datum <input data-field="date" value="${plannerEsc(l.date)}"></label>
-        <label>Titel <input data-field="title" value="${plannerEsc(l.title)}"></label>
-        <label>Von <input data-field="from" value="${plannerEsc(l.from)}"></label>
-        <label>Ziel <input data-field="to" value="${plannerEsc(l.to)}"></label>
-        <label>km <input type="number" step="1" data-field="km" value="${l.km}"></label>
-        <label>Fahrtzeit <input data-field="time" value="${plannerEsc(l.time)}"></label>
-        <label>Breitengrad <input type="number" step="0.000001" data-field="lat" value="${l.lat}"></label>
-        <label>Längengrad <input type="number" step="0.000001" data-field="lon" value="${l.lon}"></label>
+      <div class="planner-row-actions">
+        <button class="secondary-btn" onclick="plannerOpen('${l.id}')">Edit</button>
+        <button class="secondary-btn" onclick="plannerMove('${l.id}',-1)">↑</button>
+        <button class="secondary-btn" onclick="plannerMove('${l.id}',1)">↓</button>
+        <button class="danger-btn" onclick="plannerDelete('${l.id}')">×</button>
       </div>
-
-      <div class="planner-grid full">
-        <label>Übernachtung / Suchgebiet <input data-field="overnight" value="${plannerEsc(l.overnight)}"></label>
-        <label>Notizen <input data-field="notes" value="${plannerEsc(l.notes)}"></label>
-      </div>
-
-      <div class="planner-actions">
-        <button class="mini-btn save-leg-btn" onclick="plannerSaveCard('${l.id}')">Speichern</button>
-        <button class="mini-btn secondary-btn" onclick="plannerMoveLeg('${l.id}',-1)">↑</button>
-        <button class="mini-btn secondary-btn" onclick="plannerMoveLeg('${l.id}',1)">↓</button>
-        <button class="mini-btn secondary-btn" onclick="plannerDuplicateLeg('${l.id}')">Kopie</button>
-        <button class="mini-btn danger-btn" onclick="plannerDeleteLeg('${l.id}')">Löschen</button>
-      </div>
-      <div class="planner-note">Wichtig auf Android: Nach Änderungen „Speichern“ drücken. Drag & Drop ist optional; ↑/↓ ist zuverlässiger.</div>
     </article>
-  `).join("") + `<div class="editor-version">Route Editor v5 aktiv</div>`;
-
-  let dragId = null;
-  el.querySelectorAll(".planner-card").forEach(card => {
-    card.addEventListener("dragstart", () => { dragId = card.dataset.id; card.classList.add("dragging"); });
-    card.addEventListener("dragend", () => { card.classList.remove("dragging"); dragId = null; });
-    card.addEventListener("dragover", e => e.preventDefault());
-    card.addEventListener("drop", e => {
-      e.preventDefault();
-      const targetId = card.dataset.id;
-      if(!dragId || dragId === targetId) return;
-      const legs = plannerGetLegs().map(plannerNormalize);
-      const from = legs.findIndex(l => l.id === dragId);
-      const to = legs.findIndex(l => l.id === targetId);
-      if(from < 0 || to < 0) return;
-      const [moved] = legs.splice(from,1);
-      legs.splice(to,0,moved);
-      plannerSaveLegs(legs);
-      plannerRefresh();
-      renderPlanner();
-    });
-  });
+  `).join("") + `<p class="planner-help">Route Editor v6 aktiv. Auf Android: Etappe antippen → ändern → „Etappe speichern“.</p>`;
 }
-function plannerMoveLeg(id, delta){
-  const legs = plannerGetLegs().map(plannerNormalize);
+function plannerOpen(id){
+  const legs = plannerGet();
+  const leg = legs.find(l => l.id === id);
+  const box = document.getElementById("plannerEditor");
+  if(!leg || !box) return;
+  state.currentLegId = id;
+  if(typeof save === "function") save();
+  box.hidden = false;
+  box.innerHTML = `
+    <h3>Etappe bearbeiten</h3>
+    <div class="planner-form">
+      <label>Datum <input id="pe-date" value="${plannerHtml(leg.date)}"></label>
+      <label>Titel <input id="pe-title" value="${plannerHtml(leg.title)}"></label>
+      <label>Start / Von <input id="pe-from" value="${plannerHtml(leg.from)}"></label>
+      <label>Ziel / Etappenziel <input id="pe-to" value="${plannerHtml(leg.to)}"></label>
+      <div class="planner-two">
+        <label>Entfernung km <input id="pe-km" type="number" step="1" value="${Number(leg.km || 0)}"></label>
+        <label>Fahrtzeit <input id="pe-time" value="${plannerHtml(leg.time)}"></label>
+      </div>
+      <div class="planner-two">
+        <label>Breitengrad <input id="pe-lat" type="number" step="0.000001" value="${Number(leg.lat || 0)}"></label>
+        <label>Längengrad <input id="pe-lon" type="number" step="0.000001" value="${Number(leg.lon || 0)}"></label>
+      </div>
+      <label>Übernachtung / Suchgebiet <input id="pe-overnight" value="${plannerHtml(leg.overnight)}"></label>
+      <label>Notizen <textarea id="pe-notes">${plannerHtml(leg.notes)}</textarea></label>
+      <div class="planner-editor-actions">
+        <button class="planner-save" onclick="plannerSaveOpen('${id}')">Etappe speichern</button>
+        <button class="secondary-btn" onclick="plannerCloseEditor()">Abbrechen</button>
+      </div>
+      <div class="planner-editor-actions">
+        <button class="secondary-btn" onclick="plannerDuplicate('${id}')">Etappe duplizieren</button>
+        <button class="danger-btn" onclick="plannerDelete('${id}')">Etappe löschen</button>
+      </div>
+    </div>
+  `;
+  plannerRender();
+  setTimeout(() => box.scrollIntoView({behavior:"smooth", block:"start"}), 100);
+}
+function plannerCloseEditor(){
+  const box = document.getElementById("plannerEditor");
+  if(box) box.hidden = true;
+}
+function plannerSaveOpen(id){
+  const legs = plannerGet();
+  const idx = legs.findIndex(l => l.id === id);
+  if(idx < 0) return;
+  legs[idx] = {
+    ...legs[idx],
+    date: document.getElementById("pe-date").value,
+    title: document.getElementById("pe-title").value,
+    from: document.getElementById("pe-from").value,
+    to: document.getElementById("pe-to").value,
+    km: Number(document.getElementById("pe-km").value || 0),
+    time: document.getElementById("pe-time").value,
+    lat: Number(document.getElementById("pe-lat").value || 0),
+    lon: Number(document.getElementById("pe-lon").value || 0),
+    overnight: document.getElementById("pe-overnight").value,
+    notes: document.getElementById("pe-notes").value
+  };
+  plannerSet(legs);
+  plannerCloseEditor();
+  plannerRender();
+  alert("Etappe gespeichert.");
+}
+function plannerMove(id, delta){
+  const legs = plannerGet();
   const i = legs.findIndex(l => l.id === id);
   const j = i + delta;
   if(i < 0 || j < 0 || j >= legs.length) return;
   [legs[i], legs[j]] = [legs[j], legs[i]];
-  plannerSaveLegs(legs);
-  plannerRefresh();
-  renderPlanner();
+  plannerSet(legs);
+  plannerRender();
 }
-function plannerDuplicateLeg(id){
-  const legs = plannerGetLegs().map(plannerNormalize);
+function plannerDuplicate(id){
+  const legs = plannerGet();
   const i = legs.findIndex(l => l.id === id);
   if(i < 0) return;
   const copy = JSON.parse(JSON.stringify(legs[i]));
   copy.id = "leg-custom-" + Date.now();
   copy.title = copy.title + " (Kopie)";
-  legs.splice(i+1, 0, copy);
-  plannerSaveLegs(legs);
-  plannerRefresh();
-  renderPlanner();
+  legs.splice(i + 1, 0, copy);
+  plannerSet(legs);
+  plannerRender();
 }
-function plannerDeleteLeg(id){
+function plannerDelete(id){
   if(!confirm("Diese Etappe wirklich löschen?")) return;
-  const legs = plannerGetLegs().map(plannerNormalize).filter(l => l.id !== id);
-  plannerSaveLegs(legs);
-  plannerRefresh();
-  renderPlanner();
+  const legs = plannerGet().filter(l => l.id !== id);
+  plannerSet(legs);
+  plannerCloseEditor();
+  plannerRender();
 }
-function setupPlannerV5(){
-  if(typeof trip === "undefined") return;
-  if(!localStorage.getItem("fr2026-original-legs")){
-    localStorage.setItem("fr2026-original-legs", JSON.stringify(trip.legs));
-  }
-  const custom = localStorage.getItem("fr2026-custom-legs-v5") || localStorage.getItem("fr2026-custom-legs");
-  if(custom){
-    try { trip.legs = JSON.parse(custom).map(plannerNormalize); } catch(e){}
-  }
-
-  const addBtn = document.getElementById("addLegBtn");
-  if(addBtn) addBtn.onclick = () => {
-    const legs = plannerGetLegs().map(plannerNormalize);
-    const prev = legs[legs.length-1] || {to:"",lat:0,lon:0};
-    legs.push({
-      id:"leg-custom-"+Date.now(),
-      date:"",
-      title:"Neue Etappe",
-      from:prev.to || "",
-      to:"Neues Ziel",
-      km:0,
-      time:"",
-      lat:prev.lat || 0,
-      lon:prev.lon || 0,
-      overnight:"",
-      notes:"",
-      tags:["Neu"],
-      groceries:[]
-    });
-    plannerSaveLegs(legs);
-    plannerRefresh();
-    renderPlanner();
+function plannerAdd(){
+  const legs = plannerGet();
+  const prev = legs[legs.length - 1] || {to:"", lat:0, lon:0};
+  const newLeg = {
+    id:"leg-custom-" + Date.now(),
+    date:"",
+    title:"Neue Etappe",
+    from:prev.to || "",
+    to:"Neues Ziel",
+    km:0,
+    time:"",
+    lat:Number(prev.lat || 0),
+    lon:Number(prev.lon || 0),
+    overnight:"",
+    notes:"",
+    tags:["Neu"],
+    groceries:[]
   };
-
-  const resetBtn = document.getElementById("resetPlanBtn");
-  if(resetBtn) resetBtn.onclick = () => {
-    if(!confirm("Originalplanung wiederherstellen? Deine Etappenänderungen werden gelöscht.")) return;
-    const original = localStorage.getItem("fr2026-original-legs");
-    if(original){
-      localStorage.removeItem("fr2026-custom-legs");
-      localStorage.removeItem("fr2026-custom-legs-v5");
-      trip.legs = JSON.parse(original);
-      plannerRefresh();
-      renderPlanner();
+  legs.push(newLeg);
+  plannerSet(legs);
+  plannerRender();
+  plannerOpen(newLeg.id);
+}
+function plannerReset(){
+  if(!confirm("Originalplanung wiederherstellen? Alle Änderungen an Etappen werden gelöscht.")) return;
+  localStorage.removeItem("fr2026-plan-v6");
+  trip.legs = JSON.parse(localStorage.getItem("fr2026-original-legs-v6") || JSON.stringify(trip.legs));
+  plannerSyncApp();
+  plannerCloseEditor();
+  plannerRender();
+}
+function plannerExport(){
+  const blob = new Blob([JSON.stringify(plannerGet(), null, 2)], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "frankreich-2026-etappenplanung.json";
+  a.click();
+}
+function plannerImportFile(file){
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try{
+      const legs = JSON.parse(reader.result).map(plannerCleanLeg);
+      if(!legs.length) throw new Error();
+      plannerSet(legs);
+      plannerRender();
+      alert("Planung importiert.");
+    }catch(e){
+      alert("Import fehlgeschlagen.");
     }
   };
-
-  const exportBtn = document.getElementById("exportPlanBtn");
-  if(exportBtn) exportBtn.onclick = () => {
-    const blob = new Blob([JSON.stringify(plannerGetLegs(), null, 2)], {type:"application/json"});
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "frankreich-2026-etappenplanung.json";
-    a.click();
-  };
-
-  const importInp = document.getElementById("importPlanInput");
-  if(importInp) importInp.onchange = e => {
-    const file = e.target.files[0];
-    if(!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      try{
-        const incoming = JSON.parse(reader.result).map(plannerNormalize);
-        if(!incoming.length) throw new Error();
-        plannerSaveLegs(incoming);
-        plannerRefresh();
-        renderPlanner();
-        alert("Planung importiert.");
-      }catch(err){
-        alert("Import fehlgeschlagen: ungültige Planungsdatei.");
-      }
-    };
-    reader.readAsText(file);
-  };
-
-  plannerRefresh();
-  renderPlanner();
+  reader.readAsText(file);
 }
-setTimeout(setupPlannerV5, 800);
-setTimeout(setupPlannerV5, 2000);
+function plannerInit(){
+  if(typeof trip === "undefined" || !trip?.legs?.length) return false;
+  if(!localStorage.getItem("fr2026-original-legs-v6")){
+    localStorage.setItem("fr2026-original-legs-v6", JSON.stringify(trip.legs));
+  }
+  const saved = localStorage.getItem("fr2026-plan-v6");
+  if(saved){
+    try{ trip.legs = JSON.parse(saved).map(plannerCleanLeg); }catch(e){}
+  }
+  const add = document.getElementById("plannerAddLegBtn");
+  const reset = document.getElementById("plannerResetBtn");
+  const exp = document.getElementById("plannerExportBtn");
+  const imp = document.getElementById("plannerImportInput");
+  if(add) add.onclick = plannerAdd;
+  if(reset) reset.onclick = plannerReset;
+  if(exp) exp.onclick = plannerExport;
+  if(imp) imp.onchange = e => plannerImportFile(e.target.files[0]);
+  plannerSyncApp();
+  plannerRender();
+  return true;
+}
+(function waitPlanner(){
+  let tries = 0;
+  const t = setInterval(() => {
+    tries++;
+    if(plannerInit() || tries > 20) clearInterval(t);
+  }, 500);
+})();

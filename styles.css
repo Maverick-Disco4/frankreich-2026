@@ -22,22 +22,28 @@ footer{position:fixed;bottom:0;left:0;right:0;z-index:30;background:#111a13f4;ba
 
 .gps-mini{border-color:#29a54555}.track-item{border-bottom:1px solid #ffffff14;padding:10px 0;color:var(--muted);line-height:1.4}.track-line{color:#8ee48e;font-weight:700}
 
-/* Route Planner v4 */
+/* Route Editor v6 - reliable mobile editor */
+.version-pill{font-size:12px;background:var(--accent);color:white;border-radius:999px;padding:3px 8px;vertical-align:middle}
 .planner-list{display:grid;gap:10px;margin-top:12px}
-.planner-card{background:var(--soft);border:1px solid #ffffff14;border-radius:16px;padding:12px}
-.planner-card.dragging{opacity:.55;outline:2px dashed var(--accent)}
-.planner-head{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;margin-bottom:8px}
-.drag-handle{font-size:22px;color:var(--muted);cursor:grab;user-select:none;padding:6px}
-.planner-title{font-weight:850}
-.planner-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.planner-grid.full{grid-template-columns:1fr}
-.planner-grid label{font-size:12px;color:var(--muted);display:grid;gap:4px}
-.planner-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
-.mini-btn{padding:9px;font-size:13px}
-.planner-note{color:var(--muted);font-size:12px;margin-top:8px}
-@media(max-width:720px){.planner-grid,.planner-actions{grid-template-columns:1fr}.planner-head{grid-template-columns:auto 1fr}}
-
-/* Route Planner v5 Hotfix */
-.save-leg-btn{background:var(--gold)!important;color:#1b1608!important}
-.planner-card.saved{outline:2px solid var(--accent)}
-.editor-version{color:var(--muted);font-size:12px;margin-top:8px}
+.planner-row{background:var(--soft);border:1px solid #ffffff14;border-radius:16px;padding:12px;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center}
+.planner-row.active{outline:2px solid var(--accent)}
+.planner-num{font-size:24px;font-weight:900;color:var(--text);width:36px;text-align:center}
+.planner-main strong{display:block;color:var(--text);font-size:15px}
+.planner-main span{display:block;color:var(--muted);font-size:13px;line-height:1.35}
+.planner-row-actions{display:grid;gap:6px}
+.planner-row-actions button{padding:8px 10px;font-size:12px}
+.planner-editor{background:#0e1711;border:1px solid #29a54555;border-radius:18px;padding:12px;margin:12px 0}
+.planner-editor h3{margin:0 0 10px}
+.planner-form{display:grid;gap:8px}
+.planner-form label{display:grid;gap:4px;color:var(--muted);font-size:12px}
+.planner-form textarea{width:100%;min-height:90px;padding:12px;border-radius:13px;border:1px solid #ffffff20;background:#0e1711;color:var(--text);font-family:inherit}
+.planner-two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.planner-editor-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.planner-save{background:var(--gold)!important;color:#1b1608!important}
+.planner-help{color:var(--muted);font-size:12px;margin:8px 0 0;line-height:1.4}
+.full{width:100%}
+@media(max-width:720px){
+  .planner-row{grid-template-columns:auto 1fr}
+  .planner-row-actions{grid-column:1 / -1;grid-template-columns:repeat(4,1fr);display:grid}
+  .planner-two,.planner-editor-actions{grid-template-columns:1fr}
+}

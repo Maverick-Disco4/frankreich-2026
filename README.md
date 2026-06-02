@@ -39,20 +39,12 @@ Danach lädt GitHub Pages automatisch neu.
 
 Hinweis: Auf Android Standortberechtigung erlauben, Energiesparen für Browser/App deaktivieren und Display möglichst aktiv lassen.
 
-## Route Planner v4
-- Etappen nachträglich bearbeiten
-- Etappenziele, Titel, Datum, km, Zeit, Koordinaten, Übernachtung und Notizen überschreiben
-- Etappen per Drag & Drop sortieren
-- Smartphone-freundliche ↑/↓ Sortierung
+## Route Editor v6
+- Eigener Planungsbutton in der unteren Navigation
+- Etappen antippen und in separatem Formular bearbeiten
+- Ziel, Start, Datum, km, Fahrtzeit, Koordinaten, Übernachtung und Notizen überschreibbar
+- Expliziter Button „Etappe speichern“
+- Sortieren über ↑/↓
+- Neue Etappen hinzufügen
 - Etappen duplizieren/löschen
-- neue Etappen hinzufügen
 - Planung exportieren/importieren
-- Originalplanung wiederherstellen
-
-## Route Editor v5 Hotfix
-- Android-sicheres Bearbeiten mit explizitem „Speichern“-Button pro Etappe
-- Etappenziele manuell überschreibbar
-- Koordinaten, km, Fahrtzeit, Notizen und Übernachtung überschreibbar
-- ↑/↓ Sortierung für Smartphone
-- Drag & Drop bleibt zusätzlich aktiv
-- Export/Import der geänderten Planung

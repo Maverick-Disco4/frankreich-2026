@@ -30,7 +30,7 @@
     <button class="tab" data-view="logbook">Log</button>
   </nav>
 
-  <main data-route-editor-version="v5">
+  <main>
     <section id="dashboard" class="view active">
       <section class="panel hero">
         <div class="hero-title">
@@ -60,7 +60,7 @@
 
       <section class="panel">
         <h2>Schnellzugriff aktuelle Region</h2>
-        <button class="secondary-btn full" onclick="showView('planner')">Planung bearbeiten</button>
+        <button class="secondary-btn full" onclick="showView('planner'); setTimeout(plannerRender,100);">Planung bearbeiten</button>
         <div class="actions two">
           <a id="quickPark4Night" class="link-btn" target="_blank" rel="noopener">Park4Night</a>
           <a id="quickCampspace" class="link-btn" target="_blank" rel="noopener">Campspace</a>
@@ -77,18 +77,19 @@
     
     <section id="planner" class="view">
       <section class="panel">
-        <h2>Planung bearbeiten</h2>
-        <p class="hint">Etappen nachträglich verschieben, Ziele überschreiben, Koordinaten anpassen, Etappen duplizieren oder löschen. Änderungen werden lokal auf diesem Gerät gespeichert.</p>
+        <h2>Planung bearbeiten <span class="version-pill">v6 aktiv</span></h2>
+        <p class="hint">Tippe eine Etappe an und bearbeite Ziel, Datum, km, Fahrtzeit, Koordinaten, Übernachtung und Notizen. Änderungen werden mit „Etappe speichern“ übernommen.</p>
         <div class="actions two">
-          <button id="addLegBtn">Neue Etappe</button>
-          <button id="resetPlanBtn" class="danger-btn">Originalplanung</button>
+          <button id="plannerAddLegBtn">Neue Etappe</button>
+          <button id="plannerResetBtn" class="danger-btn">Originalplanung</button>
         </div>
         <div class="actions two">
-          <button id="exportPlanBtn" class="secondary-btn">Planung exportieren</button>
+          <button id="plannerExportBtn" class="secondary-btn">Planung exportieren</button>
           <label class="import-btn">Planung importieren
-            <input id="importPlanInput" type="file" accept="application/json">
+            <input id="plannerImportInput" type="file" accept="application/json">
           </label>
         </div>
+        <div id="plannerEditor" class="planner-editor" hidden></div>
         <div id="plannerList" class="planner-list"></div>
       </section>
     </section>
@@ -244,7 +245,7 @@
   <footer>
     <button class="footer-tab active" data-view="dashboard">▣<small>Übersicht</small></button>
     <button class="footer-tab" data-view="mapView">▰<small>Karte</small></button>
-    <button class="footer-tab primary" id="plusBtn">＋</button>
+    <button class="footer-tab primary" data-view="planner">☷<small>Plan</small></button>
     <button class="footer-tab" data-view="tracking">⌖<small>GPS</small></button>
     <button class="footer-tab" data-view="journal">◆<small>POIs</small></button>
   </footer>
