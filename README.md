@@ -27,3 +27,14 @@ Diese Dateien im Repository ersetzen:
 - README.md
 
 Danach lädt GitHub Pages automatisch neu.
+
+
+## GPS v3
+- Live-GPS-Tracking pro Etappe
+- tatsächliche Distanz per GPS-Punkten
+- Live-Anzeige von km, Zeit, Punkten, Geschwindigkeit und Genauigkeit
+- grüne Live-Tracklinie auf der Karte
+- Track abschließen und ins Fahrtenlog übernehmen
+- GPX-Export für Live-Track und abgeschlossene Tracks
+
+Hinweis: Auf Android Standortberechtigung erlauben, Energiesparen für Browser/App deaktivieren und Display möglichst aktiv lassen.

@@ -25,6 +25,7 @@
     <button class="tab" data-view="stages">Etappen</button>
     <button class="tab" data-view="search">Suche</button>
     <button class="tab" data-view="journal">Tagebuch</button>
+    <button class="tab" data-view="tracking">GPS</button>
     <button class="tab" data-view="logbook">Log</button>
   </nav>
 
@@ -44,6 +45,15 @@
           <button id="startPauseBtn">Etappe starten</button>
           <button id="resumeBtn" class="secondary-btn">Fortsetzen</button>
           <button id="finishBtn" class="secondary-btn">Abschließen</button>
+        </div>
+      </section>
+
+      <section class="panel gps-mini">
+        <h2>GPS-Live</h2>
+        <div class="status-grid">
+          <div><span id="gpsKmMini">0.00</span><small>km live</small></div>
+          <div><span id="gpsPointsMini">0</span><small>GPS-Punkte</small></div>
+          <div><span id="gpsAccuracyMini">–</span><small>Genauigkeit</small></div>
         </div>
       </section>
 
@@ -164,6 +174,34 @@
       </section>
     </section>
 
+
+    <section id="tracking" class="view">
+      <section class="panel">
+        <h2>GPS-Tracking</h2>
+        <p class="hint">Zeichnet die tatsächlich gefahrene Strecke lokal auf diesem Gerät auf. Für zuverlässiges Tracking Display aktiv lassen und Energiesparen für Browser/App deaktivieren.</p>
+        <div class="status-grid">
+          <div><span id="gpsKm">0.00</span><small>km live</small></div>
+          <div><span id="gpsDuration">0:00</span><small>GPS-Zeit</small></div>
+          <div><span id="gpsPoints">0</span><small>Punkte</small></div>
+        </div>
+        <div class="status-grid">
+          <div><span id="gpsSpeed">–</span><small>km/h</small></div>
+          <div><span id="gpsAccuracy">–</span><small>Genauigkeit</small></div>
+          <div><span id="gpsStatus">bereit</span><small>Status</small></div>
+        </div>
+        <div class="actions">
+          <button id="gpsStartBtn">GPS starten</button>
+          <button id="gpsPauseBtn" class="secondary-btn">GPS pausieren</button>
+          <button id="gpsFinishBtn" class="secondary-btn">Track abschließen</button>
+        </div>
+        <div class="actions two">
+          <button id="exportGpxBtn" class="secondary-btn">Live-GPX exportieren</button>
+          <button id="clearTrackBtn" class="danger-btn">Live-Track löschen</button>
+        </div>
+        <div id="trackList"></div>
+      </section>
+    </section>
+
     <section id="logbook" class="view">
       <section class="panel">
         <h2>Fahrtenlog</h2>
@@ -186,7 +224,7 @@
     <button class="footer-tab active" data-view="dashboard">▣<small>Übersicht</small></button>
     <button class="footer-tab" data-view="mapView">▰<small>Karte</small></button>
     <button class="footer-tab primary" id="plusBtn">＋</button>
-    <button class="footer-tab" data-view="search">⌕<small>Suche</small></button>
+    <button class="footer-tab" data-view="tracking">⌖<small>GPS</small></button>
     <button class="footer-tab" data-view="journal">◆<small>POIs</small></button>
   </footer>
 
