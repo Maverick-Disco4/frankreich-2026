@@ -36,3 +36,8 @@ footer{position:fixed;bottom:0;left:0;right:0;z-index:30;background:#111a13f4;ba
 .mini-btn{padding:9px;font-size:13px}
 .planner-note{color:var(--muted);font-size:12px;margin-top:8px}
 @media(max-width:720px){.planner-grid,.planner-actions{grid-template-columns:1fr}.planner-head{grid-template-columns:auto 1fr}}
+
+/* Route Planner v5 Hotfix */
+.save-leg-btn{background:var(--gold)!important;color:#1b1608!important}
+.planner-card.saved{outline:2px solid var(--accent)}
+.editor-version{color:var(--muted);font-size:12px;margin-top:8px}

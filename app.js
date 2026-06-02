@@ -377,88 +377,135 @@ function setupGpsTracking(){
   setTimeout(()=>{ redrawLiveTrack(); updateGpsUi(); renderTracks(); }, 500);
 }
 
-/* ===== Route Planner v4 ===== */
-function activeLegs(){
-  const custom = localStorage.getItem("fr2026-custom-legs");
+/* ===== Route Planner v5 Hotfix ===== */
+function plannerGetLegs(){
+  const custom = localStorage.getItem("fr2026-custom-legs-v5") || localStorage.getItem("fr2026-custom-legs");
   if(custom){ try { return JSON.parse(custom); } catch(e){} }
   return trip.legs;
 }
-function saveLegPlan(legs){
+function plannerSaveLegs(legs){
+  localStorage.setItem("fr2026-custom-legs-v5", JSON.stringify(legs));
   localStorage.setItem("fr2026-custom-legs", JSON.stringify(legs));
   trip.legs = legs;
   if(typeof save === "function") save();
 }
-function escapePlannerHtml(s){
-  return String(s ?? "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-function normalizeLeg(l, i){
+function plannerNormalize(l, i){
   return {
     ...l,
-    id:l.id || "leg-custom-"+Date.now()+"-"+i,
-    date:l.date || "",
-    title:l.title || `${l.from || ""} → ${l.to || ""}`,
-    from:l.from || "",
-    to:l.to || "",
-    km:Number(l.km || 0),
-    time:l.time || "",
-    lat:Number(l.lat || 0),
-    lon:Number(l.lon || 0),
-    overnight:l.overnight || "",
-    notes:l.notes || "",
-    tags:Array.isArray(l.tags) ? l.tags : [],
-    groceries:Array.isArray(l.groceries) ? l.groceries : []
+    id: l.id || "leg-custom-" + Date.now() + "-" + i,
+    date: l.date || "",
+    title: l.title || `${l.from || ""} → ${l.to || ""}`,
+    from: l.from || "",
+    to: l.to || "",
+    km: Number(l.km || 0),
+    time: l.time || "",
+    lat: Number(l.lat || 0),
+    lon: Number(l.lon || 0),
+    overnight: l.overnight || "",
+    notes: l.notes || "",
+    tags: Array.isArray(l.tags) ? l.tags : [],
+    groceries: Array.isArray(l.groceries) ? l.groceries : []
   };
 }
-function refreshAfterPlanEdit(){
-  const legs = activeLegs().map(normalizeLeg);
+function plannerEsc(s){
+  return String(s ?? "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function plannerRefresh(){
+  const legs = plannerGetLegs().map(plannerNormalize);
   trip.legs = legs;
   if(!legs.find(l => l.id === state.currentLegId)) state.currentLegId = legs[0]?.id || "leg-01";
+
   const sel = document.getElementById("regionSelect");
-  if(sel){ sel.innerHTML = legs.map(l => `<option value="${l.id}">${l.date} · ${l.to}</option>`).join(""); sel.value = state.currentLegId; }
+  if(sel){
+    sel.innerHTML = legs.map(l => `<option value="${l.id}">${plannerEsc(l.date)} · ${plannerEsc(l.to)}</option>`).join("");
+    sel.value = state.currentLegId;
+  }
+
   if(typeof renderLegs === "function") renderLegs();
   if(typeof updateHeader === "function") updateHeader();
-  if(typeof renderPlanner === "function") renderPlanner();
+
   if(map && routeLine){
-    try{ map.removeLayer(routeLine); }catch(e){}
+    try { map.removeLayer(routeLine); } catch(e){}
     const coords = legs.map(l => [Number(l.lat), Number(l.lon)]).filter(p => Number.isFinite(p[0]) && Number.isFinite(p[1]));
     routeLine = L.polyline(coords, {weight:4, color:"#29a545"}).addTo(map);
   }
 }
+function plannerReadCard(id){
+  const card = document.querySelector(`.planner-card[data-id="${id}"]`);
+  if(!card) return null;
+  const get = field => card.querySelector(`[data-field="${field}"]`)?.value ?? "";
+  const leg = plannerGetLegs().map(plannerNormalize).find(l => l.id === id);
+  if(!leg) return null;
+  return {
+    ...leg,
+    date:get("date"),
+    title:get("title"),
+    from:get("from"),
+    to:get("to"),
+    km:Number(get("km") || 0),
+    time:get("time"),
+    lat:Number(get("lat") || 0),
+    lon:Number(get("lon") || 0),
+    overnight:get("overnight"),
+    notes:get("notes")
+  };
+}
+function plannerSaveCard(id){
+  const legs = plannerGetLegs().map(plannerNormalize);
+  const idx = legs.findIndex(l => l.id === id);
+  const updated = plannerReadCard(id);
+  if(idx < 0 || !updated) return;
+  legs[idx] = updated;
+  plannerSaveLegs(legs);
+  plannerRefresh();
+  renderPlanner();
+  const newCard = document.querySelector(`.planner-card[data-id="${id}"]`);
+  if(newCard){
+    newCard.classList.add("saved");
+    setTimeout(()=>newCard.classList.remove("saved"), 1000);
+  }
+}
 function renderPlanner(){
   const el = document.getElementById("plannerList");
-  if(!el || !window.trip && typeof trip === "undefined") return;
-  const legs = activeLegs().map(normalizeLeg);
+  if(!el || typeof trip === "undefined") return;
+  const legs = plannerGetLegs().map(plannerNormalize);
   el.innerHTML = legs.map((l, idx) => `
     <article class="planner-card" draggable="true" data-id="${l.id}">
       <div class="planner-head">
         <div class="drag-handle">☰</div>
-        <div><div class="planner-title">${idx+1}. ${escapePlannerHtml(l.date)} · ${escapePlannerHtml(l.title || l.to)}</div><div class="meta">${l.km} km · ${escapePlannerHtml(l.time)}</div></div>
+        <div>
+          <div class="planner-title">${idx+1}. ${plannerEsc(l.date)} · ${plannerEsc(l.title || l.to)}</div>
+          <div class="meta">${l.km} km · ${plannerEsc(l.time)}</div>
+        </div>
         <button class="mini-btn secondary-btn" onclick="selectLeg('${l.id}')">Wählen</button>
       </div>
-      <div class="planner-grid">
-        <label>Datum <input data-field="date" data-id="${l.id}" value="${escapePlannerHtml(l.date)}"></label>
-        <label>Titel <input data-field="title" data-id="${l.id}" value="${escapePlannerHtml(l.title)}"></label>
-        <label>Von <input data-field="from" data-id="${l.id}" value="${escapePlannerHtml(l.from)}"></label>
-        <label>Ziel <input data-field="to" data-id="${l.id}" value="${escapePlannerHtml(l.to)}"></label>
-        <label>km <input type="number" step="1" data-field="km" data-id="${l.id}" value="${l.km}"></label>
-        <label>Fahrtzeit <input data-field="time" data-id="${l.id}" value="${escapePlannerHtml(l.time)}"></label>
-        <label>Breitengrad <input type="number" step="0.000001" data-field="lat" data-id="${l.id}" value="${l.lat}"></label>
-        <label>Längengrad <input type="number" step="0.000001" data-field="lon" data-id="${l.id}" value="${l.lon}"></label>
-      </div>
-      <div class="planner-grid full">
-        <label>Übernachtung / Suchgebiet <input data-field="overnight" data-id="${l.id}" value="${escapePlannerHtml(l.overnight)}"></label>
-        <label>Notizen <input data-field="notes" data-id="${l.id}" value="${escapePlannerHtml(l.notes)}"></label>
-      </div>
-      <div class="planner-actions">
-        <button class="mini-btn secondary-btn" onclick="moveLeg('${l.id}',-1)">↑</button>
-        <button class="mini-btn secondary-btn" onclick="moveLeg('${l.id}',1)">↓</button>
-        <button class="mini-btn secondary-btn" onclick="duplicateLeg('${l.id}')">Duplizieren</button>
-        <button class="mini-btn danger-btn" onclick="deleteLeg('${l.id}')">Löschen</button>
-      </div>
-      <div class="planner-note">Drag & Drop funktioniert am besten auf Desktop/Tablet. Auf dem Smartphone ↑/↓ nutzen.</div>
-    </article>`).join("");
 
-  el.querySelectorAll("input[data-field]").forEach(inp => inp.addEventListener("change", () => updateLegField(inp.dataset.id, inp.dataset.field, inp.value)));
+      <div class="planner-grid">
+        <label>Datum <input data-field="date" value="${plannerEsc(l.date)}"></label>
+        <label>Titel <input data-field="title" value="${plannerEsc(l.title)}"></label>
+        <label>Von <input data-field="from" value="${plannerEsc(l.from)}"></label>
+        <label>Ziel <input data-field="to" value="${plannerEsc(l.to)}"></label>
+        <label>km <input type="number" step="1" data-field="km" value="${l.km}"></label>
+        <label>Fahrtzeit <input data-field="time" value="${plannerEsc(l.time)}"></label>
+        <label>Breitengrad <input type="number" step="0.000001" data-field="lat" value="${l.lat}"></label>
+        <label>Längengrad <input type="number" step="0.000001" data-field="lon" value="${l.lon}"></label>
+      </div>
+
+      <div class="planner-grid full">
+        <label>Übernachtung / Suchgebiet <input data-field="overnight" value="${plannerEsc(l.overnight)}"></label>
+        <label>Notizen <input data-field="notes" value="${plannerEsc(l.notes)}"></label>
+      </div>
+
+      <div class="planner-actions">
+        <button class="mini-btn save-leg-btn" onclick="plannerSaveCard('${l.id}')">Speichern</button>
+        <button class="mini-btn secondary-btn" onclick="plannerMoveLeg('${l.id}',-1)">↑</button>
+        <button class="mini-btn secondary-btn" onclick="plannerMoveLeg('${l.id}',1)">↓</button>
+        <button class="mini-btn secondary-btn" onclick="plannerDuplicateLeg('${l.id}')">Kopie</button>
+        <button class="mini-btn danger-btn" onclick="plannerDeleteLeg('${l.id}')">Löschen</button>
+      </div>
+      <div class="planner-note">Wichtig auf Android: Nach Änderungen „Speichern“ drücken. Drag & Drop ist optional; ↑/↓ ist zuverlässiger.</div>
+    </article>
+  `).join("") + `<div class="editor-version">Route Editor v5 aktiv</div>`;
 
   let dragId = null;
   el.querySelectorAll(".planner-card").forEach(card => {
@@ -469,74 +516,103 @@ function renderPlanner(){
       e.preventDefault();
       const targetId = card.dataset.id;
       if(!dragId || dragId === targetId) return;
-      const legs = activeLegs().map(normalizeLeg);
-      const from = legs.findIndex(l => l.id === dragId), to = legs.findIndex(l => l.id === targetId);
+      const legs = plannerGetLegs().map(plannerNormalize);
+      const from = legs.findIndex(l => l.id === dragId);
+      const to = legs.findIndex(l => l.id === targetId);
+      if(from < 0 || to < 0) return;
       const [moved] = legs.splice(from,1);
       legs.splice(to,0,moved);
-      saveLegPlan(legs);
-      refreshAfterPlanEdit();
+      plannerSaveLegs(legs);
+      plannerRefresh();
+      renderPlanner();
     });
   });
 }
-function updateLegField(id, field, value){
-  const legs = activeLegs().map(normalizeLeg);
-  const leg = legs.find(l => l.id === id);
-  if(!leg) return;
-  leg[field] = ["km","lat","lon"].includes(field) ? Number(value || 0) : value;
-  saveLegPlan(legs);
-  refreshAfterPlanEdit();
-}
-function moveLeg(id, delta){
-  const legs = activeLegs().map(normalizeLeg);
-  const i = legs.findIndex(l => l.id === id), j = i + delta;
+function plannerMoveLeg(id, delta){
+  const legs = plannerGetLegs().map(plannerNormalize);
+  const i = legs.findIndex(l => l.id === id);
+  const j = i + delta;
   if(i < 0 || j < 0 || j >= legs.length) return;
   [legs[i], legs[j]] = [legs[j], legs[i]];
-  saveLegPlan(legs);
-  refreshAfterPlanEdit();
+  plannerSaveLegs(legs);
+  plannerRefresh();
+  renderPlanner();
 }
-function duplicateLeg(id){
-  const legs = activeLegs().map(normalizeLeg);
+function plannerDuplicateLeg(id){
+  const legs = plannerGetLegs().map(plannerNormalize);
   const i = legs.findIndex(l => l.id === id);
   if(i < 0) return;
   const copy = JSON.parse(JSON.stringify(legs[i]));
   copy.id = "leg-custom-" + Date.now();
   copy.title = copy.title + " (Kopie)";
   legs.splice(i+1, 0, copy);
-  saveLegPlan(legs);
-  refreshAfterPlanEdit();
+  plannerSaveLegs(legs);
+  plannerRefresh();
+  renderPlanner();
 }
-function deleteLeg(id){
+function plannerDeleteLeg(id){
   if(!confirm("Diese Etappe wirklich löschen?")) return;
-  saveLegPlan(activeLegs().map(normalizeLeg).filter(l => l.id !== id));
-  refreshAfterPlanEdit();
+  const legs = plannerGetLegs().map(plannerNormalize).filter(l => l.id !== id);
+  plannerSaveLegs(legs);
+  plannerRefresh();
+  renderPlanner();
 }
-function setupPlanner(){
-  if(!localStorage.getItem("fr2026-original-legs")) localStorage.setItem("fr2026-original-legs", JSON.stringify(trip.legs));
-  const custom = localStorage.getItem("fr2026-custom-legs");
-  if(custom){ try { trip.legs = JSON.parse(custom).map(normalizeLeg); } catch(e){} }
+function setupPlannerV5(){
+  if(typeof trip === "undefined") return;
+  if(!localStorage.getItem("fr2026-original-legs")){
+    localStorage.setItem("fr2026-original-legs", JSON.stringify(trip.legs));
+  }
+  const custom = localStorage.getItem("fr2026-custom-legs-v5") || localStorage.getItem("fr2026-custom-legs");
+  if(custom){
+    try { trip.legs = JSON.parse(custom).map(plannerNormalize); } catch(e){}
+  }
+
   const addBtn = document.getElementById("addLegBtn");
   if(addBtn) addBtn.onclick = () => {
-    const legs = activeLegs().map(normalizeLeg);
+    const legs = plannerGetLegs().map(plannerNormalize);
     const prev = legs[legs.length-1] || {to:"",lat:0,lon:0};
-    legs.push({id:"leg-custom-"+Date.now(),date:"",title:"Neue Etappe",from:prev.to || "",to:"Neues Ziel",km:0,time:"",lat:prev.lat || 0,lon:prev.lon || 0,overnight:"",notes:"",tags:["Neu"],groceries:[]});
-    saveLegPlan(legs);
-    refreshAfterPlanEdit();
-    showView("planner");
+    legs.push({
+      id:"leg-custom-"+Date.now(),
+      date:"",
+      title:"Neue Etappe",
+      from:prev.to || "",
+      to:"Neues Ziel",
+      km:0,
+      time:"",
+      lat:prev.lat || 0,
+      lon:prev.lon || 0,
+      overnight:"",
+      notes:"",
+      tags:["Neu"],
+      groceries:[]
+    });
+    plannerSaveLegs(legs);
+    plannerRefresh();
+    renderPlanner();
   };
+
   const resetBtn = document.getElementById("resetPlanBtn");
   if(resetBtn) resetBtn.onclick = () => {
-    if(!confirm("Originalplanung wiederherstellen?")) return;
+    if(!confirm("Originalplanung wiederherstellen? Deine Etappenänderungen werden gelöscht.")) return;
     const original = localStorage.getItem("fr2026-original-legs");
-    if(original){ localStorage.removeItem("fr2026-custom-legs"); trip.legs = JSON.parse(original); refreshAfterPlanEdit(); }
+    if(original){
+      localStorage.removeItem("fr2026-custom-legs");
+      localStorage.removeItem("fr2026-custom-legs-v5");
+      trip.legs = JSON.parse(original);
+      plannerRefresh();
+      renderPlanner();
+    }
   };
+
   const exportBtn = document.getElementById("exportPlanBtn");
   if(exportBtn) exportBtn.onclick = () => {
-    const blob = new Blob([JSON.stringify(activeLegs(), null, 2)], {type:"application/json"});
+    const blob = new Blob([JSON.stringify(plannerGetLegs(), null, 2)], {type:"application/json"});
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = "frankreich-2026-etappenplanung.json";
     a.click();
   };
+
   const importInp = document.getElementById("importPlanInput");
   if(importInp) importInp.onchange = e => {
     const file = e.target.files[0];
@@ -544,21 +620,21 @@ function setupPlanner(){
     const reader = new FileReader();
     reader.onload = () => {
       try{
-        const incoming = JSON.parse(reader.result).map(normalizeLeg);
-        saveLegPlan(incoming);
-        refreshAfterPlanEdit();
+        const incoming = JSON.parse(reader.result).map(plannerNormalize);
+        if(!incoming.length) throw new Error();
+        plannerSaveLegs(incoming);
+        plannerRefresh();
+        renderPlanner();
         alert("Planung importiert.");
-      }catch(err){ alert("Import fehlgeschlagen."); }
+      }catch(err){
+        alert("Import fehlgeschlagen: ungültige Planungsdatei.");
+      }
     };
     reader.readAsText(file);
   };
+
+  plannerRefresh();
   renderPlanner();
 }
-setTimeout(() => {
-  try{
-    if(typeof trip !== "undefined"){
-      setupPlanner();
-      refreshAfterPlanEdit();
-    }
-  }catch(e){ console.error(e); }
-}, 1000);
+setTimeout(setupPlannerV5, 800);
+setTimeout(setupPlannerV5, 2000);

@@ -48,3 +48,11 @@ Hinweis: Auf Android Standortberechtigung erlauben, Energiesparen für Browser/A
 - neue Etappen hinzufügen
 - Planung exportieren/importieren
 - Originalplanung wiederherstellen
+
+## Route Editor v5 Hotfix
+- Android-sicheres Bearbeiten mit explizitem „Speichern“-Button pro Etappe
+- Etappenziele manuell überschreibbar
+- Koordinaten, km, Fahrtzeit, Notizen und Übernachtung überschreibbar
+- ↑/↓ Sortierung für Smartphone
+- Drag & Drop bleibt zusätzlich aktiv
+- Export/Import der geänderten Planung
