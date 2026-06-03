@@ -628,3 +628,142 @@ function plannerInit(){
     if(plannerInit() || tries > 20) clearInterval(t);
   }, 500);
 })();
+
+
+/* ===== Version 7: permanent driven route + archive photo upload ===== */
+let drivenTrackLayers = [];
+let liveDiscoveryMarker = null;
+
+function v7DistanceKmForTrack(t){
+  return Number(t.km || (t.distanceM ? t.distanceM/1000 : 0));
+}
+function liveDiscoveryIcon(){
+  return L.divIcon({html:`<div class="live-discovery-marker">🚙</div>`,className:"",iconSize:[34,34],iconAnchor:[17,17],popupAnchor:[0,-17]});
+}
+function drawCompletedDrivenTracks(){
+  if(!map || !state.completedTracks) return;
+  drivenTrackLayers.forEach(layer => { try{ map.removeLayer(layer); }catch(e){} });
+  drivenTrackLayers = [];
+  state.completedTracks.forEach((track) => {
+    if(!track.points || track.points.length < 2) return;
+    const coords = track.points.map(p => [p.lat, p.lon]);
+    const layer = L.polyline(coords, {weight:4, color:"#8ee48e", opacity:0.8}).addTo(map);
+    layer.bindPopup(`<strong>Gefahrene Route</strong><br>${track.legTitle || "Track"}<br>${v7DistanceKmForTrack(track).toFixed(2)} km · ${fmtTime(track.ms || 0)}<br>${track.points.length} GPS-Punkte`);
+    drivenTrackLayers.push(layer);
+  });
+}
+function updateLiveDiscoveryMarker(point){
+  if(!map || !point) return;
+  const pos = [point.lat, point.lon];
+  if(!liveDiscoveryMarker){
+    liveDiscoveryMarker = L.marker(pos, {icon: liveDiscoveryIcon()}).addTo(map);
+    liveDiscoveryMarker.bindPopup("🚙 Aktuelle Position");
+  } else {
+    liveDiscoveryMarker.setLatLng(pos);
+  }
+}
+function updatePlannedRouteBlue(){
+  if(!map || !routeLine || !trip?.legs) return;
+  try{ map.removeLayer(routeLine); }catch(e){}
+  const coords = trip.legs.map(l => [Number(l.lat), Number(l.lon)]).filter(p => Number.isFinite(p[0]) && Number.isFinite(p[1]));
+  routeLine = L.polyline(coords, {weight:4, color:"#6fa8ff", opacity:0.85}).addTo(map);
+}
+const originalInitMapV7 = typeof initMap === "function" ? initMap : null;
+if(originalInitMapV7){
+  initMap = function(){
+    originalInitMapV7();
+    setTimeout(() => { updatePlannedRouteBlue(); drawCompletedDrivenTracks(); if(state.gps?.lastPoint) updateLiveDiscoveryMarker(state.gps.lastPoint); }, 300);
+  };
+}
+const originalHandleGpsPositionV7 = typeof handleGpsPosition === "function" ? handleGpsPosition : null;
+if(originalHandleGpsPositionV7){
+  handleGpsPosition = function(pos){
+    originalHandleGpsPositionV7(pos);
+    const last = state.gps?.lastPoint;
+    if(last) updateLiveDiscoveryMarker(last);
+  };
+}
+const originalFinishGpsTrackV7 = typeof finishGpsTrack === "function" ? finishGpsTrack : null;
+if(originalFinishGpsTrackV7){
+  finishGpsTrack = function(){
+    originalFinishGpsTrackV7();
+    setTimeout(() => { drawCompletedDrivenTracks(); updatePlannedRouteBlue(); }, 500);
+  };
+}
+const originalRedrawLiveTrackV7 = typeof redrawLiveTrack === "function" ? redrawLiveTrack : null;
+if(originalRedrawLiveTrackV7){
+  redrawLiveTrack = function(){
+    originalRedrawLiveTrackV7();
+    if(liveTrackLine){ try{ liveTrackLine.setStyle({color:"#8ee48e", weight:5, opacity:0.95}); }catch(e){} }
+  };
+}
+function setupArchivePhotoInputV7(){
+  const archiveInput = document.getElementById("poiPhotoArchive");
+  const cameraInput = document.getElementById("poiPhoto");
+  if(!archiveInput || !cameraInput) return false;
+  if(archiveInput.__v7Ready) return true;
+  archiveInput.__v7Ready = true;
+  const attach = (input) => {
+    input.addEventListener("change", async () => {
+      if(!input.files || !input.files[0]) return;
+      if(typeof fileToSmallDataUrl !== "function") return;
+      const data = await fileToSmallDataUrl(input.files[0]);
+      const preview = document.getElementById("photoPreview");
+      if(preview){
+        preview.hidden = false;
+        preview.innerHTML = `<img src="${data}" alt="Vorschau">`;
+      }
+      window.__fr2026PendingArchivePhoto = data;
+    });
+  };
+  attach(archiveInput);
+  attach(cameraInput);
+  return true;
+}
+function patchJournalSubmitV7(){
+  const form = document.getElementById("poiForm");
+  if(!form || form.__v7Patched) return false;
+  form.__v7Patched = true;
+  form.addEventListener("submit", () => {
+    setTimeout(() => {
+      if(window.__fr2026PendingArchivePhoto && state.customPois?.length){
+        const last = state.customPois[state.customPois.length - 1];
+        if(last && !last.photo){
+          last.photo = window.__fr2026PendingArchivePhoto;
+          window.__fr2026PendingArchivePhoto = null;
+          save();
+          if(typeof renderCustomPois === "function") renderCustomPois();
+        }
+      }
+    }, 250);
+  });
+  return true;
+}
+function renderTracksV7Summary(){
+  const el = document.getElementById("trackList");
+  if(!el || !state.completedTracks) return;
+  const totalKm = state.completedTracks.reduce((s,t) => s + v7DistanceKmForTrack(t), 0);
+  if(state.completedTracks.length && !document.getElementById("v7TrackSummary")){
+    el.insertAdjacentHTML("beforebegin", `<div id="v7TrackSummary" class="track-summary">Dauerhaft gespeicherte gefahrene Route: <strong>${totalKm.toFixed(2)} km</strong> in ${state.completedTracks.length} Track(s).</div>`);
+  } else if(document.getElementById("v7TrackSummary")){
+    document.getElementById("v7TrackSummary").innerHTML = `Dauerhaft gespeicherte gefahrene Route: <strong>${totalKm.toFixed(2)} km</strong> in ${state.completedTracks.length} Track(s).`;
+  }
+}
+const originalRenderTracksV7 = typeof renderTracks === "function" ? renderTracks : null;
+if(originalRenderTracksV7){
+  renderTracks = function(){ originalRenderTracksV7(); renderTracksV7Summary(); };
+}
+(function initV7(){
+  let tries = 0;
+  const t = setInterval(() => {
+    tries++;
+    setupArchivePhotoInputV7();
+    patchJournalSubmitV7();
+    if(map){
+      updatePlannedRouteBlue();
+      drawCompletedDrivenTracks();
+      if(state.gps?.lastPoint) updateLiveDiscoveryMarker(state.gps.lastPoint);
+    }
+    if(tries > 12) clearInterval(t);
+  }, 500);
+})();

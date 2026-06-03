@@ -48,3 +48,10 @@ Hinweis: Auf Android Standortberechtigung erlauben, Energiesparen für Browser/A
 - Neue Etappen hinzufügen
 - Etappen duplizieren/löschen
 - Planung exportieren/importieren
+
+## Version 7
+- Live-Karte mit geplanter Route in Blau
+- tatsächlich gefahrene Route dauerhaft in Grün
+- abgeschlossene GPS-Tracks bleiben auf der Karte sichtbar
+- aktuelle Position als Discovery-Marker
+- Fotos können beim POI entweder aufgenommen oder aus dem Archiv/Galerie hochgeladen werden

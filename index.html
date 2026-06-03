@@ -72,7 +72,7 @@
       </section>
     </section>
 
-    <section id="mapView" class="view"><section id="map"></section></section>
+    <section id="mapView" class="view"><section class="map-toolbar" id="mapLegendV7"><span class="planned-line">━ geplant</span><span class="driven-line">━ gefahren</span><span>🚙 live</span></section><section id="map"></section></section>
 
     
     <section id="planner" class="view">
@@ -158,9 +158,7 @@
           <input id="poiLat" type="number" step="0.000001" placeholder="Breitengrad">
           <input id="poiLon" type="number" step="0.000001" placeholder="Längengrad">
           <textarea id="poiNote" placeholder="Notiz / Tagebucheintrag"></textarea>
-          <label class="file-label">Foto hinzufügen
-            <input id="poiPhoto" type="file" accept="image/*" capture="environment">
-          </label>
+          <div class="photo-actions"><label class="file-label">Foto aufnehmen<input id="poiPhoto" type="file" accept="image/*" capture="environment"></label><label class="file-label">Foto aus Archiv<input id="poiPhotoArchive" type="file" accept="image/*"></label></div>
           <div id="photoPreview" class="photo-preview" hidden></div>
           <div class="actions two">
             <button>POI speichern</button>
