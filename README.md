@@ -62,9 +62,3 @@ Hinweis: Auf Android Standortberechtigung erlauben, Energiesparen für Browser/A
 - Option „Autobahnen vermeiden“ über OpenRouteService
 - OpenRouteService API-Key kann in der Karte eingetragen werden
 - Routencache lokal im Browser
-
-## Version 9 – mehrere Fotos pro POI
-- Foto aus Archiv/Galerie erlaubt Mehrfachauswahl
-- mehrere Bilder werden am POI gespeichert
-- Vorschau als Bilderraster
-- Anzeige im POI-Journal als Galerie
