@@ -1,4 +1,4 @@
-const CACHE = "frankreich-2026-v9-road-routing";
+const CACHE = "frankreich-2026-v10-multi-photo";
 const ASSETS = ["./", "./index.html", "./styles.css", "./app.js", "./trip-data.json", "./manifest.webmanifest"];
 self.addEventListener("install", e => e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS))));
 self.addEventListener("activate", e => e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))));

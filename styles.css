@@ -61,3 +61,10 @@ footer{position:fixed;bottom:0;left:0;right:0;z-index:30;background:#111a13f4;ba
 .road-routing-controls select,.road-routing-controls input{min-width:0}
 .route-status{color:var(--muted);font-size:12px;width:100%;margin-top:4px}
 @media(max-width:720px){.road-routing-controls{grid-template-columns:1fr}.road-routing-controls button{width:100%}}
+
+/* Version 9 multi photo POIs */
+.photo-preview-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:6px}
+.photo-preview-grid img{width:100%;height:92px;object-fit:cover;border-radius:10px}
+.poi-photo-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin:8px 0}
+.poi-photo-grid img{width:100%;height:150px;object-fit:cover;border-radius:12px;border:1px solid #ffffff18}
+@media(max-width:720px){.photo-preview-grid{grid-template-columns:repeat(2,1fr)}.poi-photo-grid{grid-template-columns:1fr}}
