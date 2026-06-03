@@ -55,3 +55,9 @@ footer{position:fixed;bottom:0;left:0;right:0;z-index:30;background:#111a13f4;ba
 .live-discovery-marker{font-size:28px;filter:grayscale(1) brightness(.15);text-shadow:0 1px 2px #fff,0 0 4px #fff}
 .track-summary{background:var(--soft);border:1px solid #ffffff14;border-radius:14px;padding:10px;margin-top:8px;color:var(--muted)}
 @media(max-width:720px){.photo-actions{grid-template-columns:1fr}.map-toolbar{font-size:12px}}
+
+/* Version 8 road routing */
+.road-routing-controls{display:grid;grid-template-columns:1fr 1.2fr auto auto;gap:8px;width:100%;margin-bottom:8px}
+.road-routing-controls select,.road-routing-controls input{min-width:0}
+.route-status{color:var(--muted);font-size:12px;width:100%;margin-top:4px}
+@media(max-width:720px){.road-routing-controls{grid-template-columns:1fr}.road-routing-controls button{width:100%}}

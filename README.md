@@ -55,3 +55,10 @@ Hinweis: Auf Android Standortberechtigung erlauben, Energiesparen für Browser/A
 - abgeschlossene GPS-Tracks bleiben auf der Karte sichtbar
 - aktuelle Position als Discovery-Marker
 - Fotos können beim POI entweder aufgenommen oder aus dem Archiv/Galerie hochgeladen werden
+
+## Version 8 – echte Straßenroute
+- geplante Etappen werden nicht mehr nur per Luftlinie verbunden
+- normale Straßenroute über OSRM/OpenStreetMap
+- Option „Autobahnen vermeiden“ über OpenRouteService
+- OpenRouteService API-Key kann in der Karte eingetragen werden
+- Routencache lokal im Browser

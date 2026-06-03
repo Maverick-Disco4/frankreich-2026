@@ -72,7 +72,18 @@
       </section>
     </section>
 
-    <section id="mapView" class="view"><section class="map-toolbar" id="mapLegendV7"><span class="planned-line">━ geplant</span><span class="driven-line">━ gefahren</span><span>🚙 live</span></section><section id="map"></section></section>
+    <section id="mapView" class="view"><section class="map-toolbar" id="mapLegendV8">
+      <div id="roadRoutingControlsV8" class="road-routing-controls">
+        <select id="routingProviderSelect">
+          <option value="osrm">Straßenroute: normal</option>
+          <option value="ors-avoid">Straßenroute: Autobahnen vermeiden</option>
+        </select>
+        <input id="orsApiKeyInput" type="password" placeholder="OpenRouteService API-Key">
+        <button id="routeRebuildBtn" class="secondary-btn">Route neu laden</button>
+        <button id="routeClearCacheBtn" class="secondary-btn">Cache leeren</button>
+      </div>
+      <span class="planned-line">━ geplant</span><span class="driven-line">━ gefahren</span><span>🚙 live</span>
+    </section><section id="map"></section></section>
 
     
     <section id="planner" class="view">
